@@ -7,6 +7,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/mean', (req, res) => {
+    if(!queryBool) {
+        return res.status(400).json("Invalid: Must include 'nums' query!");
+    }
     let nums = req.query.nums.split(",");
     let mean = 0;
     for(let n of nums) {
@@ -18,6 +21,9 @@ app.get('/mean', (req, res) => {
 });
 
 app.get('/median', (req, res) => {
+    if(!queryBool) {
+        return res.status(400).json("Invalid: Must include 'nums' query!");
+    }
     let nums = req.query.nums.split(",").sort((a, b) => a - b).map(v => parseInt(v));
     let median = nums.length % 2 === 1 
         ? nums[Math.floor(nums.length / 2)] 
@@ -29,12 +35,20 @@ app.get('/median', (req, res) => {
 });
 
 app.get('/mode', (req, res) => {
+    queryBool = req.query.nums ? true : false;
+    if(!queryBool) {
+        return res.status(400).json("Invalid: Must include 'nums' query!");
+    }
     let nums = req.query.nums.split(",").sort((a, b) => a - b).map(v => parseInt(v));
+
     let count = 0;
     let max = 0;
     let mode = undefined;
 
     for(let i = 0; i < nums.length; i++) {
+        if(isNaN(nums[i])) {
+            return res.status(400).json('Invalid: All values must be numbers!');
+        }
         count += 1;
         if(count > max) {
             max = count;
